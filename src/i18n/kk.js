@@ -6,6 +6,8 @@ export default {
       addWord:   'Сөз қосу',
       favorites: 'Таңдаулылар',
       import:    'Импорт',
+      signIn:    'Кіру',
+      signOut:   'Шығу'
     },
     search: {
       title:       'Phraseological Concordance',

@@ -6,6 +6,8 @@ export default {
       addWord:   'Добавить слово',
       favorites: 'Избранное',
       import:    'Импорт',
+       signIn:    'Войти',
+      signOut:   'Выйти'
     },
     search: {
       title:       'Phraseological Concordance',
@@ -23,6 +25,7 @@ export default {
       definition: 'Определение',
       delete:     'Удалить',
       confirmDel: 'Подтвердите удаление',
+     
     },
     form: {
       title:       'Добавить слово',

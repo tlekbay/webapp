@@ -3,10 +3,43 @@ import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 
+
 const LANGS = [
-  { code: 'kk', flag: '🇰🇿', label: 'KK' },
-  { code: 'ru', flag: '🇷🇺', label: 'RU' },
-  { code: 'en', flag: '🇬🇧', label: 'EN' },
+  {
+    code: 'kk',
+    label: 'KK',
+    flag: (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 12" width="20" height="12">
+        <rect width="20" height="12" fill="#00AFCA"/>
+        <circle cx="10" cy="6" r="2.5" fill="#FFE000"/>
+        <path d="M13 4.5 Q14.5 6 13 7.5" stroke="#FFE000" strokeWidth="0.5" fill="none"/>
+      </svg>
+    ),
+  },
+  {
+    code: 'ru',
+    label: 'RU',
+    flag: (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 12" width="20" height="12">
+        <rect width="20" height="4" fill="white"/>
+        <rect y="4" width="20" height="4" fill="#0039A6"/>
+        <rect y="8" width="20" height="4" fill="#D52B1E"/>
+      </svg>
+    ),
+  },
+  {
+    code: 'en',
+    label: 'EN',
+    flag: (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 12" width="20" height="12">
+        <rect width="20" height="12" fill="#012169"/>
+        <path d="M0 0L20 12M20 0L0 12" stroke="white" strokeWidth="2.5"/>
+        <path d="M0 0L20 12M20 0L0 12" stroke="#C8102E" strokeWidth="1.5"/>
+        <path d="M10 0V12M0 6H20" stroke="white" strokeWidth="3.5"/>
+        <path d="M10 0V12M0 6H20" stroke="#C8102E" strokeWidth="2"/>
+      </svg>
+    ),
+  },
 ]
 
 export default function Navbar() {
@@ -71,11 +104,11 @@ export default function Navbar() {
               {isUser ? (
                 <>
                   {isAdmin && <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">Admin</span>}
-                  <button onClick={signOut} className="text-sm text-stone-500 hover:text-red-500 transition-colors font-medium">Sign out</button>
+                  <button onClick={signOut} className="text-sm text-stone-500 hover:text-red-500 transition-colors font-medium">{t('nav.signOut')}</button>
                 </>
               ) : (
                 <Link to="/login" className="text-sm bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-1.5 rounded-lg transition-colors">
-                  Sign in
+                  {t('nav.signIn')}
                 </Link>
               )}
             </div>
@@ -111,7 +144,12 @@ export default function Navbar() {
                 <button key={code} onClick={() => { i18n.changeLanguage(code); close() }}
                   className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors
                     ${i18n.language === code ? 'bg-emerald-600 text-white' : 'bg-stone-100 text-stone-600'}`}>
-                  {flag} {label}
+                  
+                  
+                  <span className="flex items-center gap-1.5">
+  <span className="rounded-sm overflow-hidden">{flag}</span>
+  <span>{label}</span>
+</span>
                 </button>
               ))}
             </div>
@@ -123,13 +161,13 @@ export default function Navbar() {
                   {isAdmin && <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full font-medium">Admin</span>}
                   <button onClick={() => { signOut(); close() }}
                     className="text-base text-red-500 font-medium py-2">
-                    Sign out
+                    {t('nav.signOut')}
                   </button>
                 </div>
               ) : (
                 <Link to="/login" onClick={close}
                   className="block w-full text-center bg-emerald-600 text-white font-semibold py-3 rounded-xl transition-colors">
-                  Sign in
+                  {t('nav.signIn')}
                 </Link>
               )}
             </div>

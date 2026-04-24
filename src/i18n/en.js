@@ -6,6 +6,8 @@ export default {
       addWord:   'Add word',
       favorites: 'Favorites',
       import:    'Import',
+      signIn:    'Sign in',
+      signOut:   'Sign out'
     },
     search: {
       title:       'Phraseological Concordance',
