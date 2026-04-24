@@ -62,7 +62,7 @@ export function AuthProvider({ children }) {
     await supabase.auth.signOut()
   }
 
-  console.log('RENDER — loading:', loading, 'user:', !!user, 'role:', role)
+  // console.log('RENDER — loading:', loading, 'user:', !!user, 'role:', role)
 
   return (
     <AuthContext.Provider value={{
