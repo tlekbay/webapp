@@ -139,7 +139,6 @@ export default function Navbar() {
 
             {/* Language switcher — mobile */}
             <div className="flex items-center gap-2 px-3 py-3 border-t border-stone-100 mt-1">
-              <span className="text-xs text-stone-400 uppercase tracking-wide font-medium mr-1">Lang</span>
               {LANGS.map(({ code, flag, label }) => (
                 <button key={code} onClick={() => { i18n.changeLanguage(code); close() }}
                   className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors
