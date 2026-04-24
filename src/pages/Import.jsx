@@ -1,15 +1,20 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabaseClient'
 
-// Expected CSV format:
-// kk,ru,en,category,example
-// сәлем,привет,hello,phrase,Сәлем досым!
-
 function parseCSV(text) {
-  const lines = text.trim().split('\n')
-  const headers = lines[0].split(',').map(h => h.trim().toLowerCase())
+  // Remove BOM character Excel adds
+  const clean = text.replace(/^\uFEFF/, '')
+
+  const lines = clean.trim().split(/\r?\n/)
+
+  // Auto-detect separator: semicolon or comma
+  const separator = lines[0].includes(';') ? ';' : ','
+
+  const headers = lines[0].split(separator).map(h => h.trim().toLowerCase())
+
   return lines.slice(1).map(line => {
-    const values = line.split(',').map(v => v.trim())
+    const values = line.split(separator).map(v => v.trim())
     const row = {}
     headers.forEach((h, i) => { row[h] = values[i] || null })
     return row
@@ -22,9 +27,10 @@ function parseJSON(text) {
 }
 
 export default function Import() {
-  const [status, setStatus] = useState(null)
+  const { t } = useTranslation()
+  const [status, setStatus]   = useState(null)
   const [preview, setPreview] = useState([])
-  const [rows, setRows] = useState([])
+  const [rows, setRows]       = useState([])
   const [loading, setLoading] = useState(false)
 
   function handleFile(e) {
@@ -37,9 +43,9 @@ export default function Import() {
         const parsed = file.name.endsWith('.json') ? parseJSON(text) : parseCSV(text)
         setRows(parsed)
         setPreview(parsed.slice(0, 5))
-        setStatus({ type: 'info', msg: `Found ${parsed.length} words. Preview below. Click Import to save.` })
+        setStatus({ type: 'info', msg: `${parsed.length} ${t('import.found')}` })
       } catch {
-        setStatus({ type: 'error', msg: 'Could not parse file. Check the format.' })
+        setStatus({ type: 'error', msg: t('import.parseError') })
       }
     }
     reader.readAsText(file)
@@ -48,72 +54,63 @@ export default function Import() {
   async function handleImport() {
     if (!rows.length) return
     setLoading(true)
-    const { error, count } = await supabase
+    const { error } = await supabase
       .from('words')
       .upsert(rows, { onConflict: 'kk', ignoreDuplicates: true })
-      .select()
     setLoading(false)
     if (error) {
       setStatus({ type: 'error', msg: error.message })
     } else {
-      setStatus({ type: 'success', msg: `Successfully imported ${rows.length} words!` })
-      setRows([])
-      setPreview([])
+      setStatus({ type: 'success', msg: `${rows.length} ${t('import.success')}` })
+      setRows([]); setPreview([])
     }
   }
 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold text-stone-800 mb-1">Import words</h1>
-        <p className="text-stone-500 text-sm">Upload a CSV or JSON file to bulk-add words</p>
+        <h1 className="text-2xl font-bold text-stone-800 mb-1">{t('import.title')}</h1>
+        <p className="text-stone-500 text-sm">{t('import.subtitle')}</p>
       </div>
 
-      {/* Format guide */}
       <div className="bg-stone-100 rounded-xl p-4 text-sm text-stone-600">
-        <p className="font-semibold mb-2">CSV format (first row = headers):</p>
+        <p className="font-semibold mb-2">{t('import.formatTitle')}</p>
         <pre className="bg-white rounded-lg p-3 text-xs overflow-x-auto border border-stone-200">
-{`kk,ru,en,category,example
-сәлем,привет,hello,phrase,Сәлем досым!
-су,вода,water,noun,Мен су ішемін.`}
+{`kk,ru,en,category,definition,example
+сәлем,привет,hello,phrase,Амандасу сөзі,Сәлем досым!`}
         </pre>
-        <p className="font-semibold mt-3 mb-2">JSON format:</p>
+        <p className="font-semibold mt-3 mb-2">{t('import.jsonTitle')}</p>
         <pre className="bg-white rounded-lg p-3 text-xs overflow-x-auto border border-stone-200">
-{`[
-  { "kk": "сәлем", "ru": "привет", "en": "hello", "category": "phrase" },
-  { "kk": "су", "ru": "вода", "en": "water", "category": "noun" }
-]`}
+{`[{ "kk": "сәлем", "ru": "привет", "en": "hello",
+   "definition": "Greeting word", "category": "phrase" }]`}
         </pre>
       </div>
 
-      {/* Upload */}
       <label className="flex flex-col items-center justify-center gap-3 border-2 border-dashed
                         border-stone-300 rounded-xl p-10 cursor-pointer hover:border-emerald-400
                         hover:bg-emerald-50 transition-colors">
         <span className="text-4xl">📁</span>
-        <span className="text-stone-500 text-sm">Click to upload CSV or JSON</span>
+        <span className="text-stone-500 text-sm">{t('import.uploadLabel')}</span>
         <input type="file" accept=".csv,.json" onChange={handleFile} className="hidden" />
       </label>
 
-      {/* Status */}
       {status && (
         <p className={`text-sm px-4 py-3 rounded-lg font-medium
-          ${status.type === 'error'   ? 'bg-red-50 text-red-600'     : ''}
-          ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700' : ''}
-          ${status.type === 'info'    ? 'bg-blue-50 text-blue-700'   : ''}`}>
+          ${status.type === 'error'   ? 'bg-red-50 text-red-600'        : ''}
+          ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700': ''}
+          ${status.type === 'info'    ? 'bg-blue-50 text-blue-700'      : ''}`}>
           {status.msg}
         </p>
       )}
 
-      {/* Preview */}
       {preview.length > 0 && (
         <div>
-          <h3 className="font-semibold text-stone-700 mb-2">Preview (first {preview.length})</h3>
+          <h3 className="font-semibold text-stone-700 mb-2">{t('import.preview')} ({preview.length})</h3>
           <div className="overflow-x-auto rounded-xl border border-stone-200">
             <table className="w-full text-sm">
               <thead className="bg-stone-100 text-stone-500 text-xs uppercase">
                 <tr>
-                  {['kk', 'ru', 'en', 'category', 'example'].map(h => (
+                  {['kk','ru','en','category','definition','example'].map(h => (
                     <th key={h} className="px-3 py-2 text-left">{h}</th>
                   ))}
                 </tr>
@@ -125,6 +122,7 @@ export default function Import() {
                     <td className="px-3 py-2 text-blue-700">{row.ru}</td>
                     <td className="px-3 py-2 text-violet-700">{row.en}</td>
                     <td className="px-3 py-2 text-stone-400">{row.category}</td>
+                    <td className="px-3 py-2 text-amber-700">{row.definition}</td>
                     <td className="px-3 py-2 text-stone-400 italic">{row.example}</td>
                   </tr>
                 ))}
@@ -138,7 +136,7 @@ export default function Import() {
         <button onClick={handleImport} disabled={loading}
           className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white
                      font-semibold py-2.5 px-6 rounded-lg transition-colors self-start">
-          {loading ? 'Importing...' : `Import ${rows.length} words`}
+          {loading ? t('import.importing') : `${t('import.importBtn')} ${rows.length}`}
         </button>
       )}
     </div>

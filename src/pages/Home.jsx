@@ -1,15 +1,16 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { supabase } from '../supabaseClient'
 import SearchBar from '../components/SearchBar'
 import WordCard from '../components/WordCard'
 
 export default function Home() {
+  const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const [words, setWords] = useState([])
   const [favIds, setFavIds] = useState(new Set())
   const [loading, setLoading] = useState(false)
 
-  // Load favorites once
   useEffect(() => {
     supabase.from('favorites').select('word_id').then(({ data }) => {
       if (data) setFavIds(new Set(data.map(f => f.word_id)))
@@ -34,43 +35,54 @@ export default function Home() {
     return () => clearTimeout(timer)
   }, [query, search])
 
-  function handleFavToggle(wordId) {
+  useEffect(() => {
+  supabase.auth.getUser().then(({ data: { user } }) => {
+    if (!user) return
+    supabase.from('favorites')
+      .select('word_id')
+      .eq('user_id', user.id)
+      .then(({ data }) => {
+        if (data) setFavIds(new Set(data.map(f => f.word_id)))
+      })
+  })
+}, [])
+
+  function handleFavToggle(id) {
     setFavIds(prev => {
       const next = new Set(prev)
-      next.has(wordId) ? next.delete(wordId) : next.add(wordId)
+      next.has(id) ? next.delete(id) : next.add(id)
       return next
     })
   }
 
-  function handleDelete(wordId) {
-    setWords(prev => prev.filter(w => w.id !== wordId))
-    setFavIds(prev => { const next = new Set(prev); next.delete(wordId); return next })
+  function handleDelete(id) {
+    setWords(prev => prev.filter(w => w.id !== id))
   }
 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold text-stone-800 mb-1">Kazakh Dictionary</h1>
-        <p className="text-stone-500 text-sm">Search across Kazakh, Russian, and English</p>
+        <h1 className="text-2xl font-bold text-stone-800 mb-1">{t('search.title')}</h1>
+        <p className="text-stone-500 text-sm">{t('search.subtitle')}</p>
       </div>
 
-      <SearchBar value={query} onChange={setQuery} />
+      <SearchBar value={query} onChange={setQuery} placeholder={t('search.placeholder')} />
 
-      {loading && <p className="text-stone-400 text-sm text-center">Searching...</p>}
+      {loading && <p className="text-stone-400 text-sm text-center">{t('search.searching')}</p>}
 
       {!loading && words.length === 0 && query && (
         <div className="text-center py-12 text-stone-400">
           <p className="text-4xl mb-2">🔎</p>
-          <p>No words found for "<strong>{query}</strong>"</p>
-          <p className="text-sm mt-1">Try adding it via the Add Word page</p>
+          <p>{t('search.notFound')} "<strong>{query}</strong>"</p>
+          <p className="text-sm mt-1">{t('search.notFoundHint')}</p>
         </div>
       )}
 
       {!loading && words.length === 0 && !query && (
         <div className="text-center py-12 text-stone-400">
           <p className="text-4xl mb-2">📖</p>
-          <p>Your dictionary is empty</p>
-          <p className="text-sm mt-1">Start by adding words or importing a file</p>
+          <p>{t('search.empty')}</p>
+          <p className="text-sm mt-1">{t('search.emptyHint')}</p>
         </div>
       )}
 
