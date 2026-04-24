@@ -32,8 +32,8 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center">
-      <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-8 w-full max-w-sm">
+    <div className="min-h-[100dvh] sm:min-h-[70vh] flex items-center justify-center px-4 py-8">
+      <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sm:p-8 w-full max-w-sm">
 
         {/* Logo mark */}
         <div className="flex justify-center mb-6">
@@ -72,8 +72,7 @@ export default function Login() {
           {success && <p className="text-emerald-600 text-sm">{success}</p>}
 
           <button type="submit" disabled={loading}
-            className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50
-                       text-white font-semibold py-2.5 rounded-lg transition-colors">
+            className="btn-primary">
             {loading ? '...' : mode === 'login' ? 'Sign in' : 'Create account'}
           </button>
         </form>

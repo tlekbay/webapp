@@ -21,7 +21,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-stone-50 text-stone-800">
       <Navbar />
-      <main className="max-w-3xl mx-auto px-4 py-8">
+      <main className="max-w-3xl mx-auto px-4 py-6 sm:py-8 pb-safe">
         <Routes>
           <Route path="/"       element={<Home />} />
           <Route path="/login"  element={<Login />} />
@@ -43,6 +43,9 @@ export default function App() {
 } />
         </Routes>
       </main>
+      <footer className="text-center text-xs text-stone-400 py-6 border-t border-stone-100">
+  © {new Date().getFullYear()} Phraseological Concordance. All rights reserved.
+</footer>
     </div>
   )
 }

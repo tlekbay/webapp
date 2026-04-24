@@ -90,7 +90,7 @@ export default function WordForm({ onSuccess }) {
           value={form.definition}
           onChange={handleChange}
           placeholder={t('form.defPlaceholder')}
-          rows={2}
+          rows={3}
           className="input-base border-amber-200 focus:ring-amber-200 resize-none"
         />
       </label>
@@ -109,11 +109,15 @@ export default function WordForm({ onSuccess }) {
       {error   && <p className="text-red-500 text-sm">{error}</p>}
       {success && <p className="text-emerald-600 text-sm font-medium">{t('form.success')}</p>}
 
-      <button type="submit" disabled={loading}
+      {/* <button type="submit" disabled={loading}
         className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white
                    font-semibold py-2.5 px-6 rounded-lg transition-colors self-start">
         {loading ? t('form.saving') : t('form.save')}
-      </button>
+      </button> */}
+
+      <button type="submit" disabled={loading} className="btn-primary">
+  {loading ? t('form.saving') : t('form.save')}
+</button>
     </form>
   )
 }

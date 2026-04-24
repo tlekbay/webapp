@@ -60,7 +60,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5 pb-24 sm:pb-8">
       <div>
         <h1 className="text-2xl font-bold text-stone-800 mb-1">{t('search.title')}</h1>
         <p className="text-stone-500 text-sm">{t('search.subtitle')}</p>
