@@ -4,12 +4,30 @@ import { supabase } from '../supabaseClient'
 import SearchBar from '../components/SearchBar'
 import WordCard from '../components/WordCard'
 
+let cachedWords = null
+
+function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-2xl border border-stone-200 p-4 flex flex-col gap-3 animate-pulse">
+      <div className="flex justify-between">
+        <div className="h-6 bg-stone-200 rounded-lg w-32"/>
+        <div className="h-6 bg-stone-200 rounded-lg w-16"/>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="h-14 bg-blue-50 rounded-xl"/>
+        <div className="h-14 bg-violet-50 rounded-xl"/>
+      </div>
+    </div>
+  )
+}
+
 export default function Home() {
   const { t } = useTranslation()
   const [query, setQuery] = useState('')
-  const [words, setWords] = useState([])
+  const [words, setWords] = useState(cachedWords || [])
   const [favIds, setFavIds] = useState(new Set())
   const [loading, setLoading] = useState(false)
+  
 
   useEffect(() => {
     supabase.from('favorites').select('word_id').then(({ data }) => {
@@ -19,14 +37,20 @@ export default function Home() {
 
   const search = useCallback(async (q) => {
     setLoading(true)
-    let qb = supabase.from('words').select('*').order('created_at', { ascending: false })
+    let qb = supabase
+  .from('words')
+  .select('id, kk, ru, en, category, definition, example') // no created_at etc.
+  .order('created_at', { ascending: false })
+    // let qb = supabase.from('words').select('*').order('created_at', { ascending: false })
     if (q.trim()) {
       qb = qb.or(`kk.ilike.%${q}%,ru.ilike.%${q}%,en.ilike.%${q}%`)
     } else {
-      qb = qb.limit(30)
+      qb = qb.limit(50)
     }
     const { data } = await qb
-    setWords(data || [])
+    const result = data || []
+    if (!q.trim()) cachedWords = result  // cache only the default list
+    setWords(result)
     setLoading(false)
   }, [])
 
@@ -68,7 +92,13 @@ export default function Home() {
 
       <SearchBar value={query} onChange={setQuery} placeholder={t('search.placeholder')} />
 
-      {loading && <p className="text-stone-400 text-sm text-center">{t('search.searching')}</p>}
+      {/* {loading && <p className="text-stone-400 text-sm text-center">{t('search.searching')}</p>} */}
+
+      {loading && (
+  <div className="flex flex-col gap-3">
+    {[1,2,3].map(i => <SkeletonCard key={i}/>)}
+  </div>
+)}
 
       {!loading && words.length === 0 && query && (
         <div className="text-center py-12 text-stone-400">
@@ -86,6 +116,8 @@ export default function Home() {
         </div>
       )}
 
+      
+
       <div className="flex flex-col gap-3">
         {words.map(word => (
           <WordCard
@@ -100,3 +132,4 @@ export default function Home() {
     </div>
   )
 }
+

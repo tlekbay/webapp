@@ -32,7 +32,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-[100dvh] sm:min-h-[70vh] flex items-center justify-center px-4 py-8">
+    <div className="flex justify-center px-4 pt-12 pb-8 sm:min-h-[70vh] sm:items-center sm:pt-0">
       <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sm:p-8 w-full max-w-sm">
 
         {/* Logo mark */}
