@@ -76,13 +76,13 @@ export default function Import() {
       <div className="bg-stone-100 rounded-xl p-4 text-sm text-stone-600">
         <p className="font-semibold mb-2">{t('import.formatTitle')}</p>
         <pre className="bg-white rounded-lg p-3 text-xs overflow-x-auto border border-stone-200">
-{`kk,ru,en,category,definition,example
-сәлем,привет,hello,phrase,Амандасу сөзі,Сәлем досым!`}
+{`kk,ru,en,category,definition_kk,definition_ru,definition_en,example
+сәлем,привет,hello,phrase,Амандасу сөзі,Амандасу сөзі,Амандасу сөзі1,Привет друг!`}
         </pre>
         <p className="font-semibold mt-3 mb-2">{t('import.jsonTitle')}</p>
         <pre className="bg-white rounded-lg p-3 text-xs overflow-x-auto border border-stone-200">
 {`[{ "kk": "сәлем", "ru": "привет", "en": "hello",
-   "definition": "Greeting word", "category": "phrase" }]`}
+   "definition_kk": "Greeting word", "definition_ru": "Приветствие", "definition_en": "Greeting", "category": "phrase" }]`}
         </pre>
       </div>
 
@@ -110,7 +110,7 @@ export default function Import() {
             <table className="w-full text-sm">
               <thead className="bg-stone-100 text-stone-500 text-xs uppercase">
                 <tr>
-                  {['kk','ru','en','category','definition','example'].map(h => (
+                  {['kk','ru','en','category','definition_kk','definition_ru','definition_en','example'].map(h => (
                     <th key={h} className="px-3 py-2 text-left">{h}</th>
                   ))}
                 </tr>
@@ -122,7 +122,11 @@ export default function Import() {
                     <td className="px-3 py-2 text-blue-700">{row.ru}</td>
                     <td className="px-3 py-2 text-violet-700">{row.en}</td>
                     <td className="px-3 py-2 text-stone-400">{row.category}</td>
-                    <td className="px-3 py-2 text-amber-700">{row.definition}</td>
+                    <td className="px-3 py-2 text-amber-700">{row.definition_kk}</td>
+                    <td className="px-3 py-2 text-amber-700">{row.definition_ru}</td>
+                    <td className="px-3 py-2 text-amber-700">{row.definition_en}</td>
+
+
                     <td className="px-3 py-2 text-stone-400 italic">{row.example}</td>
                   </tr>
                 ))}

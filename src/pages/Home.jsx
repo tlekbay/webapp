@@ -39,7 +39,7 @@ export default function Home() {
     setLoading(true)
     let qb = supabase
   .from('words')
-  .select('id, kk, ru, en, category, definition, example') // no created_at etc.
+  .select('id, kk, ru, en, category, definition_kk, definition_ru, definition_en, example') // no created_at etc.
   .order('created_at', { ascending: false })
     // let qb = supabase.from('words').select('*').order('created_at', { ascending: false })
     if (q.trim()) {

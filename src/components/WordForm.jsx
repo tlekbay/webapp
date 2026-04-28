@@ -7,8 +7,10 @@ const CATEGORIES = ['general', 'noun', 'verb', 'adjective', 'phrase', 'number', 
 export default function WordForm({ onSuccess }) {
   const { t } = useTranslation()
   const [form, setForm] = useState({
-    kk: '', ru: '', en: '', category: 'general', definition: '', example: ''
-  })
+  kk: '', ru: '', en: '', category: 'general',
+  definition_kk: '', definition_ru: '', definition_en: '',  // ← replace definition
+  example: ''
+})
   const [loading, setLoading] = useState(false)
   const [error, setError]   = useState('')
   const [success, setSuccess] = useState(false)
@@ -23,13 +25,15 @@ export default function WordForm({ onSuccess }) {
     setLoading(true)
     setError('')
     const { error: err } = await supabase.from('words').insert({
-      kk:         form.kk.trim(),
-      ru:         form.ru.trim()         || null,
-      en:         form.en.trim()         || null,
-      category:   form.category,
-      definition: form.definition.trim() || null,
-      example:    form.example.trim()    || null,
-    })
+  kk: form.kk.trim(),
+  ru: form.ru.trim()             || null,
+  en: form.en.trim()             || null,
+  category: form.category,
+  definition_kk: form.definition_kk.trim() || null,  // ← replace definition
+  definition_ru: form.definition_ru.trim() || null,
+  definition_en: form.definition_en.trim() || null,
+  example: form.example.trim()   || null,
+})
     setLoading(false)
     if (err) { setError(err.message); return }
     setSuccess(true)
@@ -81,7 +85,7 @@ export default function WordForm({ onSuccess }) {
       </div>
 
       {/* Definition — full width, amber themed */}
-      <label className="flex flex-col gap-1">
+      {/* <label className="flex flex-col gap-1">
         <span className="text-xs font-semibold text-amber-500 uppercase tracking-wide">
           {t('form.definition')}
         </span>
@@ -93,8 +97,33 @@ export default function WordForm({ onSuccess }) {
           rows={3}
           className="input-base border-amber-200 focus:ring-amber-200 resize-none"
         />
-      </label>
+      </label> */}
+<div className="flex flex-col gap-3">
+  <span className="text-xs font-semibold text-amber-500 uppercase tracking-wide">
+    {t('form.definition')}
+  </span>
 
+  <label className="flex flex-col gap-1">
+    <span className="text-xs text-stone-400">🇰🇿 Қазақша</span>
+    <textarea name="definition_kk" value={form.definition_kk} onChange={handleChange}
+      placeholder="Сөздің мағынасы..." rows={2}
+      className="input-base border-amber-200 focus:ring-amber-200 resize-none"/>
+  </label>
+
+  <label className="flex flex-col gap-1">
+    <span className="text-xs text-stone-400">🇷🇺 Русский</span>
+    <textarea name="definition_ru" value={form.definition_ru} onChange={handleChange}
+      placeholder="Значение слова..." rows={2}
+      className="input-base border-amber-200 focus:ring-amber-200 resize-none"/>
+  </label>
+
+  <label className="flex flex-col gap-1">
+    <span className="text-xs text-stone-400">🇬🇧 English</span>
+    <textarea name="definition_en" value={form.definition_en} onChange={handleChange}
+      placeholder="Meaning of the word..." rows={2}
+      className="input-base border-amber-200 focus:ring-amber-200 resize-none"/>
+  </label>
+</div>
       {/* Example sentence */}
       <label className="flex flex-col gap-1">
         <span className="text-xs font-semibold text-stone-500 uppercase tracking-wide">

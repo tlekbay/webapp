@@ -5,7 +5,10 @@ import { supabase } from '../supabaseClient'
 
 const CATEGORIES = ['general', 'noun', 'verb', 'adjective', 'phrase', 'number', 'name']
 
+
+
 export default function EditWord() {
+  
   const { id } = useParams()
   const navigate = useNavigate()
   const { t } = useTranslation()
@@ -14,9 +17,18 @@ export default function EditWord() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    supabase.from('words').select('*').eq('id', id).single()
-      .then(({ data }) => setForm(data))
-  }, [id])
+  supabase.from('words').select('*').eq('id', id).single()
+    .then(({ data }) => setForm({
+      kk:            data.kk            || '',
+      ru:            data.ru            || '',
+      en:            data.en            || '',
+      category:      data.category      || 'general',
+      definition_kk: data.definition_kk || '',  // ← new
+      definition_ru: data.definition_ru || '',  // ← new
+      definition_en: data.definition_en || '',  // ← new
+      example:       data.example       || '',
+    }))
+}, [id])
 
   function handleChange(e) {
     setForm(f => ({ ...f, [e.target.name]: e.target.value }))
@@ -26,9 +38,15 @@ export default function EditWord() {
     e.preventDefault()
     setLoading(true)
     const { error: err } = await supabase.from('words').update({
-      kk: form.kk, ru: form.ru, en: form.en,
-      category: form.category, definition: form.definition, example: form.example,
-    }).eq('id', id)
+  kk:            form.kk,
+  ru:            form.ru,
+  en:            form.en,
+  category:      form.category,
+  definition_kk: form.definition_kk || null,  // ← new
+  definition_ru: form.definition_ru || null,  // ← new
+  definition_en: form.definition_en || null,  // ← new
+  example:       form.example,
+}).eq('id', id)
     setLoading(false)
     if (err) { setError(err.message); return }
     navigate('/')
@@ -60,11 +78,26 @@ export default function EditWord() {
             <input name="en" value={form.en || ''} onChange={handleChange} className="input-base border-violet-200"/>
           </label>
         </div>
-        <label className="flex flex-col gap-1">
-          <span className="text-xs font-semibold text-amber-500 uppercase tracking-wide">{t('form.definition')}</span>
-          <textarea name="definition" value={form.definition || ''} onChange={handleChange}
-            rows={2} className="input-base border-amber-200 resize-none"/>
-        </label>
+        <div className="flex flex-col gap-3">
+  <span className="text-xs font-semibold text-amber-500 uppercase tracking-wide">
+    {t('form.definition')}
+  </span>
+  <label className="flex flex-col gap-1">
+    <span className="text-xs text-stone-400">🇰🇿 Қазақша</span>
+    <textarea name="definition_kk" value={form.definition_kk} onChange={handleChange}
+      rows={2} className="input-base border-amber-200 focus:ring-amber-200 resize-none"/>
+  </label>
+  <label className="flex flex-col gap-1">
+    <span className="text-xs text-stone-400">🇷🇺 Русский</span>
+    <textarea name="definition_ru" value={form.definition_ru} onChange={handleChange}
+      rows={2} className="input-base border-amber-200 focus:ring-amber-200 resize-none"/>
+  </label>
+  <label className="flex flex-col gap-1">
+    <span className="text-xs text-stone-400">🇬🇧 English</span>
+    <textarea name="definition_en" value={form.definition_en} onChange={handleChange}
+      rows={2} className="input-base border-amber-200 focus:ring-amber-200 resize-none"/>
+  </label>
+</div>
         <label className="flex flex-col gap-1">
           <span className="text-xs font-semibold text-stone-500 uppercase tracking-wide">{t('form.example')}</span>
           <input name="example" value={form.example || ''} onChange={handleChange} className="input-base"/>

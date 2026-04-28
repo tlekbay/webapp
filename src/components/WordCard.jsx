@@ -5,9 +5,15 @@ import { useAuth } from '../context/AuthContext'
 import { supabase } from '../supabaseClient'
 
 export default function WordCard({ word, isFav, onFavToggle, onDelete }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { isAdmin, isUser } = useAuth()
   const [loading, setLoading] = useState(false)
+
+  const definition =
+  i18n.language === 'ru' ? word.definition_ru :
+  i18n.language === 'en' ? word.definition_en :
+  word.definition_kk
+
 
   async function toggleFav() {
     setLoading(true)
@@ -82,15 +88,14 @@ export default function WordCard({ word, isFav, onFavToggle, onDelete }) {
       </div>
 
       {/* Definition */}
-      {word.definition && (
-        <div className="bg-amber-50 rounded-xl px-3 py-2.5 text-sm">
-          <div className="text-xs text-amber-500 font-semibold uppercase tracking-wide mb-1">
-            {t('word.definition')}
-          </div>
-          <p className="text-amber-900 break-words">{word.definition}</p>
-        </div>
-      )}
-
+      {definition && (
+  <div className="bg-amber-50 rounded-xl px-3 py-2.5 text-sm">
+    <div className="text-xs text-amber-500 font-semibold uppercase tracking-wide mb-1">
+      {t('word.definition')}
+    </div>
+    <p className="text-amber-900">{definition}</p>
+  </div>
+)}
       {/* Example */}
       {word.example && (
         <p className="text-sm text-stone-400 italic border-t border-stone-100 pt-2.5 break-words">
