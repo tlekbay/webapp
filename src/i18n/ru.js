@@ -18,6 +18,8 @@ export default {
       notFoundHint:'Попробуйте добавить слово',
       empty:       'Словарь пуст',
       emptyHint:   'Начните с добавления слов или импорта файла',
+      results: 'результатов',
+  words:   'слов'
     },
     word: {
       category:   'Категория',

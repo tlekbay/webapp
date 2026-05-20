@@ -45,10 +45,11 @@ export default function Home() {
     if (q.trim()) {
       qb = qb.or(`kk.ilike.%${q}%,ru.ilike.%${q}%,en.ilike.%${q}%`)
     } else {
-      qb = qb.limit(50)
+      qb = qb.limit(500)
     }
     const { data } = await qb
-    const result = data || []
+    const result = (data || []).sort((a, b) => a.kk.localeCompare(b.kk, 'kk'))
+    // const result = data || []
     if (!q.trim()) cachedWords = result  // cache only the default list
     setWords(result)
     setLoading(false)
@@ -85,10 +86,26 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-5 pb-24 sm:pb-8">
-      <div>
+      {/* <div>
         <h1 className="text-2xl font-bold text-stone-800 mb-1">{t('search.title')}</h1>
         <p className="text-stone-500 text-sm">{t('search.subtitle')}</p>
-      </div>
+      </div> */}
+
+      <div className="flex items-center justify-between">
+  <div>
+    <h1 className="text-2xl font-bold text-stone-800 mb-1">{t('search.title')}</h1>
+    <p className="text-stone-500 text-sm">{t('search.subtitle')}</p>
+  </div>
+  <div className="text-right shrink-0">
+    <div className="text-2xl font-bold text-emerald-600">{words.length}</div>
+    {/* <div className="text-xs text-stone-400 uppercase tracking-wide">
+      {query ? 'results' : 'words'}
+    </div> */}
+    <div className="text-xs text-stone-400 uppercase tracking-wide">
+  {query ? t('search.results') : t('search.words')}
+</div>
+  </div>
+</div>
 
       <SearchBar value={query} onChange={setQuery} placeholder={t('search.placeholder')} />
 
@@ -118,7 +135,7 @@ export default function Home() {
 
       
 
-      <div className="flex flex-col gap-3">
+      {/* <div className="flex flex-col gap-3">
         {words.map(word => (
           <WordCard
             key={word.id}
@@ -128,7 +145,24 @@ export default function Home() {
             onDelete={handleDelete}
           />
         ))}
+      </div> */}
+      <div className="flex flex-col gap-3">
+  {words.map((word, index) => (
+    <div key={word.id} className="flex gap-3 items-start">
+      <span className="text-stone-400 text-sm font-medium pt-4 shrink-0 w-8 text-right">
+        {index + 1}
+      </span>
+      <div className="flex-1">
+        <WordCard
+          word={word}
+          isFav={favIds.has(word.id)}
+          onFavToggle={handleFavToggle}
+          onDelete={handleDelete}
+        />
       </div>
+    </div>
+  ))}
+</div>
     </div>
   )
 }

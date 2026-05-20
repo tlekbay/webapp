@@ -24,7 +24,7 @@ function parseCSV(text) {
 function parseJSON(text) {
   const data = JSON.parse(text)
   return (Array.isArray(data) ? data : data.words || []).filter(r => r.kk)
-}
+} 
 
 export default function Import() {
   const { t } = useTranslation()

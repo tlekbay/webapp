@@ -18,6 +18,8 @@ export default {
       notFoundHint:'Сөз қосу бетінен қосыңыз',
       empty:       'Сөздік бос',
       emptyHint:   'Сөз қосыңыз немесе файл импорттаңыз',
+      results: 'нәтиже',
+  words:   'сөз'
     },
     word: {
       category:   'Санат',

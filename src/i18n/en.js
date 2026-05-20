@@ -18,6 +18,8 @@ export default {
       notFoundHint:'Try adding it via the Add Word page',
       empty:       'Your dictionary is empty',
       emptyHint:   'Start by adding words or importing a file',
+      results: 'results',
+  words:   'words'
     },
     word: {
       category:   'Category',
